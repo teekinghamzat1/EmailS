@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTELLIGENCE_ENGINE // V1.0</title>
+    <link rel="stylesheet" href="/static/styles.css?v=1.2">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Top Bar -->
+        <header class="top-bar panel">
+            <div class="logo">
+                [ INTEL_SYSTEM // CORE_ACCESS ]
+            </div>
+            <div class="system-status">
+                <div class="status-item blink">
+                    [ ENGINE_ACTIVE ]
+                </div>
+                <div class="status-item">
+                    TIME: <span id="sys-time">00:00:00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Panel: Live Stream -->
+        <aside class="left-panel panel">
+            <div class="panel-header">LIVE_FEED</div>
+            <div id="live-logs" class="log-container">
+                <div class="log-item">INITIALIZING SYSTEM...</div>
+                <div class="log-item">CONNECTING TO POSTGRES_CORE...</div>
+                <div class="log-item">READY.</div>
+            </div>
+        </aside>
+
+        <!-- Center Panel: Console -->
+        <main class="center-panel">
+            <div class="panel-header">GENERATION_CONSOLE // BATCH_SIZE: 1000</div>
+            <div id="terminal-out" class="terminal-display">
+AWAITING COMMAND...
+--------------------------------------------------
+SYSTEM READY FOR DATA EXTRACTION.
+FRESH DATA INVENTORY DETECTED.
+PRESS 'GENERATE DATA' TO BEGIN DUMP.
+--------------------------------------------------
+            </div>
+            <div class="action-bar panel">
+                <button id="btn-generate" class="btn-generate">[ ⚡ GENERATE DATA ]</button>
+                <div id="gen-progress" style="margin-left: 20px; display: none;">[ DECRYPTING BATCH... ]</div>
+            </div>
+        </main>
+
+        <!-- Right Panel: Data Stats -->
+        <aside class="right-panel">
+            <div class="panel">
+                <div class="panel-header">INVENTORY_METRICS</div>
+                <div class="stat-box">
+                    <div>AVAILABLE_TRUTH</div>
+                    <div id="stat-available" class="stat-val">0</div>
+                </div>
+                <div class="stat-box">
+                    <div>CONSUMED_DATA</div>
+                    <div id="stat-used" class="stat-val">0</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">SYSTEM_HEALTH</div>
+                <div class="stat-box">
+                    <div>THREADS_ACTIVE</div>
+                    <div class="stat-val">50</div>
+                </div>
+                <div class="stat-box">
+                    <div>UPTIME</div>
+                    <div id="sys-uptime" class="stat-val">--:--</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Bottom Panel: Visual Mock -->
+        <footer class="bottom-panel panel">
+            <div class="keyboard-mock">
+                [ KEYBOARD_INTERFACE_SIMULATED ]
+                <br>
+                <span style="font-size: 0.7rem;">CTRL+C to interrupt // sudo access granted // end of line.</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -5,9 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const elUsed        = document.getElementById('stat-used');
     const elTime        = document.getElementById('sys-time');
     const elUptime      = document.getElementById('sys-uptime');
-    const elTerminal    = document.getElementById('terminal-out');
+    const elResults     = document.getElementById('results-list');
     const elLiveLogs    = document.getElementById('live-logs');
     const btnGenerate   = document.getElementById('btn-generate');
+    const btnExport     = document.getElementById('btn-export');
     const elProgress    = document.getElementById('gen-progress');
 
     let startTime = Date.now();
@@ -29,12 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add Live Log
     function addLog(msg) {
         const div = document.createElement('div');
-        div.className = 'log-item';
-        div.innerText = `> ${msg}`;
+        div.className = 'log-item fade-in';
+        div.innerHTML = `<span>[${new Date().toLocaleTimeString('en-GB')}]</span> ${msg}`;
         elLiveLogs.prepend(div);
         
-        // Keep only last 20
-        if (elLiveLogs.children.length > 20) {
+        if (elLiveLogs.children.length > 50) {
             elLiveLogs.removeChild(elLiveLogs.lastChild);
         }
     }
@@ -47,63 +47,64 @@ document.addEventListener('DOMContentLoaded', () => {
             
             elAvailable.innerText = formatNum(data.available_emails);
             elUsed.innerText      = formatNum(data.used_emails);
-            
-            if (data.processing_domains > 0) {
-                addLog(`CRUNCHING DOMAINS: ${data.processing_domains} ACTIVE`);
-            }
         } catch (error) {
             console.error("Failed to fetch stats:", error);
         }
     }
 
+    // Export Logic
+    async function handleExport() {
+        addLog("INITIATING INTELLIGENCE EXPORT...");
+        window.location.href = '/emails/export';
+    }
+
     // Generation Handler
     async function generateData() {
         btnGenerate.disabled = true;
-        elProgress.style.display = 'inline';
-        elTerminal.innerHTML = "--------------------------------------------------\nINITIATING DATA DUMP...\n--------------------------------------------------\n";
+        elProgress.style.display = 'block';
         
         try {
-            addLog("REQUESTING BATCH DATA...");
+            addLog("REQUESTING NEW INTELLIGENCE BATCH...");
             const response = await fetch('/emails/generate', { method: 'POST' });
             const data = await response.json();
 
             if (data.length === 0) {
-                elTerminal.innerHTML += "\n[ ERROR ]: NO FRESH DATA AVAILABLE IN SYSTEM INVENTORY.";
-                addLog("GENERATION FAILED: NO DATA");
+                addLog("FAILED: NO AVAILABLE DATA IN QUEUE");
+                alert("No new data available to generate.");
             } else {
-                addLog(`BATCH SECURED: ${data.length} RECORDS`);
+                addLog(`BATCH SECURED: ${data.length} RECORDS RECEIVED`);
                 
-                // Typing Effect for results
-                let i = 0;
-                async function typeRow() {
-                    if (i < data.length) {
-                        const item = data[i];
-                        const row = `[ DATA_RECORD ]: ${item.email.padEnd(30)} // SOURCE: ${item.source.toUpperCase().padEnd(10)} // DOMAIN: ${item.domain}\n`;
-                        elTerminal.innerHTML += row;
-                        elTerminal.scrollTop = elTerminal.scrollHeight;
-                        i++;
-                        
-                        // Type first 50 fast, then batch balance for performance
-                        if (i < 50) {
-                            setTimeout(typeRow, 10);
-                        } else if (i % 20 === 0) {
-                            // Render in chunks of 20 to keep it feeling fast but "scrolling"
-                            await new Promise(r => setTimeout(r, 10));
-                            typeRow();
-                        } else {
-                            typeRow();
-                        }
-                    } else {
-                        elTerminal.innerHTML += "\n--------------------------------------------------\n[ SUCCESS ]: DUMP COMPLETE. DATA MARKED AS USED.\n--------------------------------------------------";
-                        addLog("BATCH GENERATION SUCCESSFUL");
-                        fetchStats();
-                    }
+                // Clear empty state if first run
+                if (elResults.querySelector('.empty-state')) {
+                    elResults.innerHTML = '';
                 }
-                typeRow();
+
+                data.forEach((item, index) => {
+                    setTimeout(() => {
+                        const row = document.createElement('div');
+                        row.className = 'data-row fade-in';
+                        row.innerHTML = `
+                            <div class="email">${item.email}</div>
+                            <div class="domain">${item.domain}</div>
+                            <div class="tag">${item.confidence > 0.8 ? 'HIGH_CONF' : 'VERIFIED'}</div>
+                            <div class="action">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="cursor:pointer; opacity:0.5;" onclick="navigator.clipboard.writeText('${item.email}')">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                            </div>
+                        `;
+                        elResults.prepend(row);
+                        
+                        if (index === data.length - 1) {
+                            addLog("DUMP COMPLETE. DATA PERSISTED.");
+                            fetchStats();
+                        }
+                    }, index * 20); // Faster staggered entry
+                });
             }
         } catch (error) {
-            elTerminal.innerHTML += `\n[ FATAL_ERROR ]: ${error.message}`;
-            addLog(`CRITICAL ERROR: ${error.message}`);
+            addLog(`CRITICAL SYSTEM ERROR: ${error.message}`);
         } finally {
             btnGenerate.disabled = false;
             elProgress.style.display = 'none';
@@ -112,11 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listeners
     btnGenerate.addEventListener('click', generateData);
+    btnExport.addEventListener('click', handleExport);
 
     // Boot & Loop
     fetchStats();
-    setInterval(fetchStats, 5000);
+    setInterval(fetchStats, 10000);
     setInterval(updateClock, 1000);
     
-    addLog("V1.0 PROTOCOL INITIALIZED");
+    addLog("INTELLIGENCE_ENGINE_V2 CORE INITIALIZED");
 });

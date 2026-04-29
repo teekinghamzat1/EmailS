@@ -133,10 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Confidence bar helper
                 const confBar = (conf) => {
                     const pct = Math.round((conf ?? 0) * 100);
-                    const color = pct >= 90 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#6b7280';
-                    return `<div style="width:50px; height:4px; background:#222; border-radius:2px; display:inline-block; vertical-align:middle;">
-                        <div style="width:${pct}%; height:100%; background:${color}; border-radius:2px;"></div>
-                    </div> <span style="font-size:11px; color:${color};">${pct}%</span>`;
+                    if (pct >= 90) return `<span style="color:#10b981; font-weight:700;">High Quality</span>`;
+                    if (pct >= 60) return `<span style="color:#f59e0b; font-weight:700;">Verified</span>`;
+                    return `<span style="color:#6b7280; font-weight:700;">Infered</span>`;
                 };
 
                 // Email rows
@@ -159,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${personTag}
                             </td>
                             <td>${statusIcon} ${e.status}</td>
-                            <td>${confBar(e.confidence)}</td>
                             <td><span class="badge ${e.is_used ? 'usage-used' : 'usage-available'}">${e.is_used ? 'Used' : 'Available'}</span></td>
                         </tr>`;
                 }).join('');
@@ -262,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.innerHTML = `
                     <td style="font-weight:500;">${item.email}</td>
                     <td style="color:var(--text-secondary);">${item.domain}</td>
-                    <td>${sourceBadge}</td>
                     <td>${statusBadge}</td>
                     <td>${usageBadge}</td>`;
                 elTableBody.appendChild(tr);

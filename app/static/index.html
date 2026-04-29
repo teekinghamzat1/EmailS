@@ -3,90 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTELLIGENCE_ENGINE // V1.0</title>
-    <link rel="stylesheet" href="/static/styles.css?v=1.2">
+    <title>Intelligence Engine // Premium Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css?v=2.0">
 </head>
 <body>
     <div class="dashboard">
-        <!-- Top Bar -->
-        <header class="top-bar panel">
-            <div class="logo">
-                [ INTEL_SYSTEM // CORE_ACCESS ]
+        <!-- Top Nav -->
+        <nav class="top-nav">
+            <div class="logo-section">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                INTELLIGENCE<span>ENGINE</span>
             </div>
-            <div class="system-status">
-                <div class="status-item blink">
-                    [ ENGINE_ACTIVE ]
+            <div class="nav-status">
+                <div class="status-chip">
+                    <div class="pulse"></div>
+                    System Active
                 </div>
-                <div class="status-item">
-                    TIME: <span id="sys-time">00:00:00</span>
-                </div>
+                <div id="sys-time">00:00:00</div>
             </div>
-        </header>
+        </nav>
 
-        <!-- Left Panel: Live Stream -->
-        <aside class="left-panel panel">
-            <div class="panel-header">LIVE_FEED</div>
-            <div id="live-logs" class="log-container">
-                <div class="log-item">INITIALIZING SYSTEM...</div>
-                <div class="log-item">CONNECTING TO POSTGRES_CORE...</div>
-                <div class="log-item">READY.</div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="stats-group">
+                <div class="section-label">Inventory Metrics</div>
+                <div class="stat-card">
+                    <div class="label">Verified Leads</div>
+                    <div id="stat-available" class="value">0</div>
+                </div>
+                <div class="stat-card" style="margin-top: 12px;">
+                    <div class="label">Exported Total</div>
+                    <div id="stat-used" class="value">0</div>
+                </div>
+            </div>
+
+            <div class="stats-group">
+                <div class="section-label">System Health</div>
+                <div class="stat-card">
+                    <div class="label">Processing Power</div>
+                    <div class="value">100%</div>
+                </div>
+                <div class="stat-card" style="margin-top: 12px;">
+                    <div class="label">Engine Uptime</div>
+                    <div id="sys-uptime" class="value">00:00</div>
+                </div>
+            </div>
+
+            <div class="logs-section">
+                <div class="section-label">Live Activity</div>
+                <div id="live-logs" class="log-feed">
+                    <!-- Logs go here -->
+                </div>
             </div>
         </aside>
 
-        <!-- Center Panel: Console -->
-        <main class="center-panel">
-            <div class="panel-header">GENERATION_CONSOLE // BATCH_SIZE: 1000</div>
-            <div id="terminal-out" class="terminal-display">
-AWAITING COMMAND...
---------------------------------------------------
-SYSTEM READY FOR DATA EXTRACTION.
-FRESH DATA INVENTORY DETECTED.
-PRESS 'GENERATE DATA' TO BEGIN DUMP.
---------------------------------------------------
-            </div>
-            <div class="action-bar panel">
-                <button id="btn-generate" class="btn-generate">[ ⚡ GENERATE DATA ]</button>
-                <div id="gen-progress" style="margin-left: 20px; display: none;">[ DECRYPTING BATCH... ]</div>
-            </div>
+        <!-- Content -->
+        <main class="content-grid">
+            <header class="action-header">
+                <div class="header-text">
+                    <h1>Generation Console</h1>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">Fetch and verify batches of targeted intelligence.</p>
+                </div>
+                <div class="btn-group">
+                    <button id="btn-export" class="btn btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        </svg>
+                        Export CSV
+                    </button>
+                    <button id="btn-generate" class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        Generate Data
+                    </button>
+                </div>
+            </header>
+
+            <section class="data-display">
+                <div class="display-header">
+                    <div class="column-labels">Intelligence Feed</div>
+                    <div id="gen-progress" style="display: none; color: var(--accent-secondary); font-size: 0.8rem;">
+                        Crunching Batch...
+                    </div>
+                </div>
+                <div id="results-list" class="results-container">
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                        <p>No data generated in this session.</p>
+                        <small>Click 'Generate Data' to begin.</small>
+                    </div>
+                </div>
+            </section>
         </main>
-
-        <!-- Right Panel: Data Stats -->
-        <aside class="right-panel">
-            <div class="panel">
-                <div class="panel-header">INVENTORY_METRICS</div>
-                <div class="stat-box">
-                    <div>AVAILABLE_TRUTH</div>
-                    <div id="stat-available" class="stat-val">0</div>
-                </div>
-                <div class="stat-box">
-                    <div>CONSUMED_DATA</div>
-                    <div id="stat-used" class="stat-val">0</div>
-                </div>
-            </div>
-            <div class="panel">
-                <div class="panel-header">SYSTEM_HEALTH</div>
-                <div class="stat-box">
-                    <div>THREADS_ACTIVE</div>
-                    <div class="stat-val">50</div>
-                </div>
-                <div class="stat-box">
-                    <div>UPTIME</div>
-                    <div id="sys-uptime" class="stat-val">--:--</div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Bottom Panel: Visual Mock -->
-        <footer class="bottom-panel panel">
-            <div class="keyboard-mock">
-                [ KEYBOARD_INTERFACE_SIMULATED ]
-                <br>
-                <span style="font-size: 0.7rem;">CTRL+C to interrupt // sudo access granted // end of line.</span>
-            </div>
-        </footer>
     </div>
 
-    <!-- Scripts -->
     <script src="/static/app.js"></script>
 </body>
 </html>

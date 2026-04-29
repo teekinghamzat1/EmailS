@@ -270,64 +270,73 @@ body {
 .fade-in { animation: fadeIn 0.5s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Mobile Responsiveness Overhaul */
+/* Final Mobile Responsiveness Overhaul */
 @media (max-width: 1024px) {
-    .btn-menu {
-        display: block !important;
-    }
-
     .dashboard {
-        display: block;
+        grid-template-columns: 1fr;
+        grid-template-rows: 70px auto 1fr;
         height: auto;
     }
 
+    .top-nav {
+        grid-column: 1;
+        position: sticky;
+        top: 0;
+    }
+
     .sidebar {
-        position: fixed;
-        left: -100%;
-        top: 70px;
-        bottom: 0;
-        width: 280px;
-        z-index: 99;
-        background: var(--bg-dark);
-        backdrop-filter: var(--glass-blur);
-        border-right: 1px solid var(--border);
-        transition: left 0.3s ease;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 12px 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        gap: 12px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .sidebar::-webkit-scrollbar { display: none; }
+
+    .stats-group {
         display: flex;
-        flex-direction: column;
+        gap: 12px;
+        flex-shrink: 0;
     }
 
-    .sidebar.active {
-        left: 0;
+    .stat-card {
+        min-width: 180px;
+        padding: 12px;
     }
 
-    .content-grid {
-        padding: 20px;
+    .stat-card .value { font-size: 1.2rem; }
+    
+    .section-label, .logs-section {
+        display: none; /* Keep it clean on mobile */
     }
 }
 
 @media (max-width: 650px) {
     .action-header {
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
         text-align: center;
     }
 
     .btn-group {
-        flex-direction: column;
         width: 100%;
+        gap: 8px;
     }
 
     .btn {
-        width: 100%;
+        flex: 1;
         justify-content: center;
     }
 
     .data-row {
-        grid-template-columns: 1fr auto;
-        font-size: 0.85rem;
+        grid-template-columns: 1fr 40px;
+        padding: 14px 20px;
     }
 
-    .data-row .domain {
-        display: none;
-    }
+    .data-row .domain { display: none; }
+    .nav-status #sys-time { display: none; }
 }

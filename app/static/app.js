@@ -115,6 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
     btnGenerate.addEventListener('click', generateData);
     btnExport.addEventListener('click', handleExport);
 
+    // Mobile Menu Toggle
+    const btnMenu = document.getElementById('menu-toggle');
+    const elSidebar = document.querySelector('.sidebar');
+    
+    if (btnMenu) {
+        btnMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+            elSidebar.classList.toggle('active');
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (elSidebar.classList.contains('active') && !elSidebar.contains(e.target)) {
+                elSidebar.classList.remove('active');
+            }
+        });
+    }
+
     // Boot & Loop
     fetchStats();
     setInterval(fetchStats, 10000);

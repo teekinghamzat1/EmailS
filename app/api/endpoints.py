@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 from typing import List
 import io
@@ -56,19 +56,32 @@ def get_emails(domain: str = None, status: str = None, db: Session = Depends(get
 def export_emails(db: Session = Depends(get_db)):
     """
     Export all valid emails to a downloadable CSV file.
+    Uses streaming to handle large datasets and joinedload to avoid N+1 queries.
     """
-    emails = db.query(Email).filter(Email.status == "valid").all()
-    
-    stream = io.StringIO()
-    writer = csv.writer(stream)
-    writer.writerow(["Email", "Domain", "Source", "Confidence Level"])
-    
-    for e in emails:
-        writer.writerow([e.email, e.domain_rel.domain, e.source, e.confidence])
+    def generate():
+        output = io.StringIO()
+        writer = csv.writer(output)
         
-    response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
-    response.headers["Content-Disposition"] = "attachment; filename=verified_emails_export.csv"
-    return response
+        # Header
+        writer.writerow(["Email", "Domain", "Source", "Confidence Level", "Status"])
+        yield output.getvalue()
+        output.seek(0)
+        output.truncate(0)
+
+        # Batch size for streaming
+        query = db.query(Email).options(joinedload(Email.domain_rel)).filter(Email.status == "valid")
+        
+        for e in query:
+            writer.writerow([e.email, e.domain_rel.domain, e.source, e.confidence, e.status])
+            yield output.getvalue()
+            output.seek(0)
+            output.truncate(0)
+
+    return StreamingResponse(
+        generate(), 
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=verified_emails_export.csv"}
+    )
 
 @router.post("/emails/generate")
 def generate_emails(db: Session = Depends(get_db)):
